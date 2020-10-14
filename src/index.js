@@ -1,7 +1,9 @@
 import './styles.css'
-import {createStore} from 'redux'
+import {applyMiddleware, createStore} from 'redux'
+import thunk from 'redux-thunk'
+import logger from 'redux-logger'
 import {rootReducer} from './redux/rootReducer'
-import {decrement, increment} from './redux/actions'
+import {asyncIncrement, decrement, increment} from './redux/actions'
 
 const counter = document.getElementById('counter')
 const addBtn = document.getElementById('add')
@@ -9,7 +11,21 @@ const subBtn = document.getElementById('sub')
 const asyncBtn = document.getElementById('async')
 const themeBtn = document.getElementById('theme')
 
-const store = createStore(rootReducer, 0)
+// function logger(state) {
+//   return function (next) {
+//     return function (action) {
+//       console.log('State: ', state)
+//       console.log('Action: ', action)
+//       return next(action)
+//     }
+//   }
+// }
+
+const store = createStore(
+  rootReducer,
+  0,
+  applyMiddleware(thunk ,logger)
+)
 
 window.store = store
 
@@ -22,7 +38,7 @@ subBtn.addEventListener('click', () => {
 })
 
 asyncBtn.addEventListener('click', () => {
-
+  store.dispatch(asyncIncrement())
 })
 
 store.subscribe(() => {
